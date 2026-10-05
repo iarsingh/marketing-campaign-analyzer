@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketing-campaign-analyzer
+  labels:
+    app: marketing-campaign-analyzer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: marketing-campaign-analyzer
+  template:
+    metadata:
+      labels:
+        app: marketing-campaign-analyzer
+    spec:
+      containers:
+        - name: api
+          image: marketing-campaign-analyzer:local
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /v1/readyz
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: marketing-campaign-analyzer
+spec:
+  selector:
+    app: marketing-campaign-analyzer
+  ports:
+    - port: 80
+      targetPort: 8080
